@@ -9,7 +9,7 @@ MILESTONES:
 23/3 Begin writing article.\
 29/3 Submit resources, code samples, code walkthrough for article (for Ivan's review)\
 30/3 Start preparing presentation\
-4/3 Presentation of group sharing.
+4/4 Presentation of group sharing.
 
 
 GOALS:
