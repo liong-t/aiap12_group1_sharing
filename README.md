@@ -1,6 +1,10 @@
 # aiap12_group1_sharing
 AIAP Sharing Project Topic
 
+Ivan's deadlines:\
+1. Complete the spreadsheet by 12 Noon of 21/03/2023\
+2. Provide link(s) to your material for our review by 12 noon of 29/03/2023
+
 MILESTONES:
 
 20/3 Assign applications to engineers to do code snippets.\
