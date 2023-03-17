@@ -4,4 +4,4 @@ AIAP Sharing Project Topic
 
 ### Research Links
 
-https://github.com/xrsrke/stable-diffusion-from-scratch
+[GitHub - Stable Diffusion from Scratch](https://github.com/xrsrke/stable-diffusion-from-scratch)
