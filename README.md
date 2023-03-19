@@ -26,4 +26,5 @@ Present the article to batchmates and engineers.
 ### Research Links
 
 [GitHub - Stable Diffusion from Scratch](https://github.com/xrsrke/stable-diffusion-from-scratch)
+[YouTube - How does Stable Diffusion work? – Latent Diffusion Models EXPLAINED](https://www.youtube.com/watch?v=J87hffSMB60)
 
