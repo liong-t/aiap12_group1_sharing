@@ -39,6 +39,7 @@ Present the article to batchmates and engineers.
 
 [What Is a Transformer Model?](https://blogs.nvidia.com/blog/2022/03/25/what-is-a-transformer-model/)
 
-[The Transformer Model](https://machinelearningmastery.com/the-transformer-model/)
+[The Transformer Model](https://machinelearningmastery.com/the-transformer-model/)\
+Machine Learning Mastery, contains code.
 
 [GitHub - Stable Diffusion from Scratch (abandoned project)](https://github.com/xrsrke/stable-diffusion-from-scratch)
