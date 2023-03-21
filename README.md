@@ -42,6 +42,8 @@ Present the article to batchmates and engineers.
 [The Transformer Model](https://machinelearningmastery.com/the-transformer-model/)\
 Machine Learning Mastery, contains math.
 
+[Transformer models: an introduction and catalog](https://arxiv.org/abs/2302.07730)
+
 [Jeremy Howard — The Simple but Profound Insight Behind Diffusion, 1:12:57](https://www.youtube.com/watch?v=HhGOGuJY1Wk)
 
 > At 3:13:\
