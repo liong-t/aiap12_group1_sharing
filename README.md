@@ -44,7 +44,7 @@ Machine Learning Mastery, contains math.
 
 [Jeremy Howard — The Simple but Profound Insight Behind Diffusion, 1:12:57](https://www.youtube.com/watch?v=HhGOGuJY1Wk)
 
-At 3:13:
-It's a simple but profound insight. Which is that it's very difficult for a model to generate something creative, and aesthetic, and correct from nothing...or from nothing but a prompt to a question, or whatever. The profound insight is to say, "Well, given that that's hard, why don't we not ask a model to do that directly? Why don't we train a model to do something a little bit better than nothing? And then make a model that — if we run it multiple times — takes a thing that's a little bit better than nothing, and makes that a little bit better still, and a little bit better still." If you run the model multiple times, as long as it's capable of improving the previous output each time, then it's just a case of running it lots of times. And that's the insight behind diffusion models.
+> At 3:13:\
+> It's a simple but profound insight. Which is that it's very difficult for a model to generate something creative, and aesthetic, and correct from nothing...or from nothing but a prompt to a question, or whatever. The profound insight is to say, "Well, given that that's hard, why don't we not ask a model to do that directly? Why don't we train a model to do something a little bit better than nothing? And then make a model that — if we run it multiple times — takes a thing that's a little bit better than nothing, and makes that a little bit better still, and a little bit better still." If you run the model multiple times, as long as it's capable of improving the previous output each time, then it's just a case of running it lots of times. And that's the insight behind diffusion models.
 
 [GitHub - Stable Diffusion from Scratch (abandoned project)](https://github.com/xrsrke/stable-diffusion-from-scratch)
