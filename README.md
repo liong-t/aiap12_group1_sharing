@@ -25,6 +25,12 @@ Present the article to batchmates and engineers.
 
 ### Research Links
 
-[GitHub - Stable Diffusion from Scratch](https://github.com/xrsrke/stable-diffusion-from-scratch)\
+[How does Stable Diffusion work?][https://stable-diffusion-art.com/how-stable-diffusion-work/]
+
+[How AI Image Generators Work (Stable Diffusion / Dall-E) - Computerphile, 17:49 video][https://youtu.be/1CIpzeNxIhU]
+
+[Stable Diffusion in Code (AI Image Generation) - Computerphile, 16:59 video][https://youtu.be/-lz30by8-sU]
+
 [YouTube - How does Stable Diffusion work? – Latent Diffusion Models EXPLAINED](https://www.youtube.com/watch?v=J87hffSMB60)
 
+[GitHub - Stable Diffusion from Scratch (abandoned project)](https://github.com/xrsrke/stable-diffusion-from-scratch)
