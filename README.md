@@ -33,4 +33,12 @@ Present the article to batchmates and engineers.
 
 [YouTube - How does Stable Diffusion work? – Latent Diffusion Models EXPLAINED](https://www.youtube.com/watch?v=J87hffSMB60)
 
+[Encoder Decoder What and Why ? – Simple Explanation](https://inside-machinelearning.com/en/encoder-decoder-what-and-why-simple-explanation/)
+
+[What is Attention Mechanism in Deep Learning ? – Quickly Understand](https://inside-machinelearning.com/en/attention-mechanism/)
+
+[What Is a Transformer Model?](https://blogs.nvidia.com/blog/2022/03/25/what-is-a-transformer-model/)
+
+[The Transformer Model](https://machinelearningmastery.com/the-transformer-model/)
+
 [GitHub - Stable Diffusion from Scratch (abandoned project)](https://github.com/xrsrke/stable-diffusion-from-scratch)
