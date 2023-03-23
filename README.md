@@ -68,8 +68,12 @@ Stable Diffusion with Hugging Face API
 7) Footnotes
 
 https://huggingface.co/blog/stable_diffusion
+
 https://huggingface.co/docs/diffusers/stable_diffusion
+
 https://colab.research.google.com/github/huggingface/notebooks/blob/main/diffusers/diffusers_intro.ipynb
+
 example:
+
 https://epoch.aisingapore.org/2022/11/how-to-use-grad-cam-to-interpret-your-convolutional-neural-network/
 
