@@ -25,12 +25,6 @@ Present the article to batchmates and engineers.
 
 ### Research Links
 
-1. Stable Diffusion with 🧨 Diffusers\
-https://huggingface.co/blog/stable_diffusion
-
-2. Introducing Hugging Face's new library for diffusion models\
-https://colab.research.google.com/github/huggingface/notebooks/blob/main/diffusers/diffusers_intro.ipynb
-
 [How does Stable Diffusion work?](https://stable-diffusion-art.com/how-stable-diffusion-work/)
 
 [How AI Image Generators Work (Stable Diffusion / Dall-E) - Computerphile, 17:49 video](https://youtu.be/1CIpzeNxIhU)
@@ -57,7 +51,9 @@ Machine Learning Mastery, contains math.
 
 [GitHub - Stable Diffusion from Scratch (abandoned project)](https://github.com/xrsrke/stable-diffusion-from-scratch)
 
+### Article sections:
 
+Title:\
 Stable Diffusion with Hugging Face API
 
 1) Intro (JF)
@@ -73,10 +69,13 @@ Stable Diffusion with Hugging Face API
 6) References
 7) Footnotes
 
+1. Stable Diffusion with 🧨 Diffusers  
 https://huggingface.co/blog/stable_diffusion
 
+2. The Stable Diffusion Guide 🎨  
 https://huggingface.co/docs/diffusers/stable_diffusion
 
+3. Introducing Hugging Face's new library for diffusion models  
 https://colab.research.google.com/github/huggingface/notebooks/blob/main/diffusers/diffusers_intro.ipynb
 
 example:
