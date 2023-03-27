@@ -42,21 +42,98 @@ Highlights of this architecture, explained in simplified terms:
 - From this latent space, the output image is decoded and upscaled to full size. [3, 4]
 - The steps of the diffusion (computing a less noisy image) are defined in a scheduler.
 
-The 2 main components in latent diffusion are:
 
-1. Autoencoder (VAE).
 
-Made up of 2 parts, an encoder and a decoder. The encoder converts the image into a low dimensional latent representation, which inputs into the U-Net. The decoder transforms the latent representation back into an image.
+## 3. Hugging Face's Pipeline Components
 
-2. A U-Net.
+The 3 main components in Hugging Face's diffusion are:
 
-Computes the predicted denoised image representation. It is conditioned by the text-embeddings from the text prompt.
+Text-Encoder
+- The text-encoder transforms input prompts into an embedding space for the U-Net. A transformer-based encoder maps input tokens to latent text-embeddings. Stable Diffusion uses CLIP's pretrained text encoder, CLIPTextModel, without additional training.
 
-3. A text-encoder, e.g. CLIP's Text Encoder.
+Variational Autoencoder (VAE)
+- The VAE consists of an encoder and a decoder, whose main goal is to transform an image back and from its latent space . The encoder converts images into low-dimensional latent representations, serving as input for the U-Net model. The decoder transforms latent representations back into images.
 
-Transforms the input text prompt into an embedding space that can be understood by the U-Net.
+Scheduler
+- The scheduling algorithm used to progressively add noise to the image during training.
 
-## 3. API Walkthrough: Pipeline Components
+U-Net
+- U-Net has an encoder and a decoder, both composed of ResNet blocks, its goal is to process the latent images obtained from the VAE encoder. The encoder compresses image representation into lower resolution, while the decoder reconstructs the original, less noisy, high-resolution representation. U-Net output predicts noise residual for denoised image calculation. Shortcut connections between encoder's downsampling and decoder's upsampling ResNets prevent information loss. Stable diffusion U-Net conditions its output on text-embeddings via cross-attention layers in both encoder and decoder.
+
+
+### a) Creating the components
+
+```
+from transformers import CLIPTextModel, CLIPTokenizer
+from diffusers import AutoencoderKL, UNet2DConditionModel, PNDMScheduler
+
+# 1. Load the autoencoder model which will be used to decode the latents into image space. 
+vae = AutoencoderKL.from_pretrained("CompVis/stable-diffusion-v1-4", subfolder="vae")
+
+# 2. Load the tokenizer and text encoder to tokenize and encode the text. 
+tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-large-patch14")
+text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
+
+# 3. Create the scheduler
+scheduler = LMSDiscreteScheduler.from_pretrained("CompVis/stable-diffusion-v1-4", subfolder="scheduler")
+
+# 4. The UNet model for generating the latents.
+unet = UNet2DConditionModel.from_pretrained("CompVis/stable-diffusion-v1-4", subfolder="unet")
+
+
+```
+
+### b) Setup the text encoding
+
+Initially, we obtain the text embeddings for the given prompt, which will serve as a basis for conditioning the UNet model.
+
+```
+text_input = tokenizer(prompt, padding="max_length", max_length=tokenizer.model_max_length, truncation=True, return_tensors="pt")
+
+with torch.no_grad():
+  text_embeddings = text_encoder(text_input.input_ids.to(torch_device))[0]
+```
+
+Furthermore, we will acquire unconditional text embeddings to provide classifier-free guidance, which consist solely of the embeddings for the padding token (empty text). It is crucial to ensure that their dimensions match those of the conditional text embeddings (i.e., batch_size and seq_length).
+
+```
+max_length = text_input.input_ids.shape[-1]
+uncond_input = tokenizer(
+    [""] * batch_size, padding="max_length", max_length=max_length, return_tensors="pt"
+)
+with torch.no_grad():
+  uncond_embeddings = text_encoder(uncond_input.input_ids.to(torch_device))[0]   
+```
+
+To enable classifier-free guidance, we need to perform two separate forward passes. One pass is with the conditioned input (text_embeddings), while the other is with the unconditional embeddings (uncond_embeddings). To optimize computational efficiency, it is feasible to concatenate both sets of embeddings into a single batch, thus eliminating the need to perform two separate forward passes.
+
+```
+text_embeddings = torch.cat([uncond_embeddings, text_embeddings])
+```
+
+Next we generate the random latent space
+
+```
+latents = torch.randn(
+  (batch_size, unet.in_channels, height // 8, width // 8),
+  generator=generator,
+)
+latents = latents.to(torch_device)
+```
+
+Next, we initialize the scheduler with our chosen num_inference_steps. This will compute the sigmas and exact time step values to be used during the denoising process.
+
+```
+scheduler.set_timesteps(num_inference_steps)
+```
+
+
+The K-LMS scheduler necessitates the multiplication of latents with their corresponding sigma values. We can accomplish this step at this point.
+
+```
+latents = latents * scheduler.init_noise_sigma
+```
+
 
 We use a pipeline to group together a **model** and a **scheduler** and make it easy for an end-user to run a full denoising loop process.
 
@@ -98,7 +175,9 @@ From the output, we can see a scheduler and a UNet model.
 
 The **model** is a pre-trained neural network used for predicting a slightly less noisy image or residual (difference between the slightly less noisy image and the input image). It takes a noisy sample and a timestep as inputs to predict a less noisy output sample.
 
-The **scheduler** is used during both training and inferencing. During training, it defines the noise schedule which is used to add noise to the model. During inferencing, it defines the algorithm to compute the slightly less noisy sample. [3]
+The **scheduler** is used during both training and inferencing. During training, it defines the noise schedule which is used to add noise to the model. During inferencing, it defines the algorithm to compute the slightly less noisy sample.[3]
+
+ For the purposes of this blog we will be focusing on the inferencing aspect of the diffusers library which occurs in the hugging face's diffusion pipeline. If you however wish to read up on the training portion please go to this jupyter notebook  https://colab.research.google.com/gist/anton-l/f3a8206dae4125b93f05b1f5f703191d/diffusers_training_example.ipynb#scrollTo=67640279-979b-490d-80fe-65673b94ae00 
 
 ### a) Model
 
@@ -191,7 +270,7 @@ Unlike a model, a scheduler has no trainable weights (so is not inherited from t
 
 There are different types of schedulers. Different schedulers work with different models. [3]
 
-Like a model, you can download a scheduler from the repo. In the example below, we load a DDPMScheduler:
+Like a model, you can download a scheduler from the repo. In the example below, we load a DDPMScheduler (DDPM stands for Denoising Diffusion Probabilistic Models):
 
 ```
 from diffusers import DDPMScheduler
@@ -239,9 +318,36 @@ torch.Size([1, 3, 256, 256])
 
 Notice that the output sample's shape is the same as the input, so it is can be looped back into the model again. [3]
 
-### c) Forward + backward diffusion
 
-[Yan Liong]
+### c) Denoising loop 
+
+The denoising loop for DDPM is straightforward:
+
+- Predict the noise residual of a less noisy sample using the model.
+- Compute the less noisy sample with the scheduler.
+- Display progress every 50 steps.
+- Loop over the tensor scheduler.timesteps, which defines the sequence of timesteps for the denoising process. 
+- Typically, denoising iterates from the maximum number of timesteps (e.g., 1000) down to 0.
+
+```
+import tqdm
+
+sample = noisy_sample
+
+for i, t in enumerate(tqdm.tqdm(scheduler.timesteps)):
+  # 1. predict noise residual
+  with torch.no_grad():
+      residual = model(sample, t).sample
+
+  # 2. compute less noisy image and set x_t -> x_t-1
+  sample = scheduler.step(residual, t, sample).prev_sample
+
+  # 3. optionally look at image
+  if (i + 1) % 50 == 0:
+      display_sample(sample, i + 1)
+```
+ <img src="denoise_1.jpg" width="500">
+
 
 ## 4. Application -> Text to imageOutput Demo
 
