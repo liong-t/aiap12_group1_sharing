@@ -69,6 +69,8 @@ Stable Diffusion with Hugging Face API
 6) References
 7) Footnotes
 
+**References**
+
 1. Stable Diffusion with 🧨 Diffusers  
 https://huggingface.co/blog/stable_diffusion
 
