@@ -58,10 +58,10 @@ Stable Diffusion with Hugging Face API
 
 1) Intro (JF)
 2) What is Stable Diffusion (JH)
-3) API Walkthrough (Code should be here)
-	https://colab.research.google.com/github/huggingface/notebooks/blob/main/diffusers/diffusers_intro.ipynb
-	a) Model Explanation (JF)
-	b) Schedulers (JF)
+3) API Walkthrough (Code should be here)  
+	https://colab.research.google.com/github/huggingface/notebooks/blob/main/diffusers/diffusers_intro.ipynb  
+	a) Model Explanation (JF)  
+	b) Schedulers (JF)  
 	c) forward + backward diffusion -> latent encode , decode (YL)
 
 4) Application -> Text to imageOutput Demo (Shu Ying)
