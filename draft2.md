@@ -56,7 +56,7 @@ Computes the predicted denoised image representation. It is conditioned by the t
 
 Transforms the input text prompt into an embedding space that can be understood by the U-Net.
 
-## 3. API Walkthrough: Pipeline
+## 3. API Walkthrough: Pipeline Components
 
 We use a pipeline to group together a **model** and a **scheduler** and make it easy for an end-user to run a full denoising loop process.
 
