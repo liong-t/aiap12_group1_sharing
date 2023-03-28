@@ -319,7 +319,7 @@ image
 
 As you can see above, our prompt "a photo of a cat on a beach" generates exactly that
 
-## Multiple images from the same prompt
+### a) Multiple images from the same prompt
 A different image is generated each time you pass in the prompt, even if it's the same one. So if you wanted multiple different pictures of cats at beaches, you could do this
 
 Create a helper function to display multiple images in a grid
@@ -355,7 +355,7 @@ grid
 ``` 
 ![catgrid](https://user-images.githubusercontent.com/107524206/228106888-7eaf3b20-413f-47e1-91e6-eec134db903a.png)
 
-## Keeping images the same
+### b) Keeping images the same
 If you wanted to generate the same image every time, we can create and pass the same generator object into the pipe.
 
 ```
@@ -388,7 +388,7 @@ If a much lower number is used for the number of steps, the image produced is le
 
 ![42cat5steps](https://user-images.githubusercontent.com/107524206/228109597-d8fa7808-de57-4091-86b1-ab72786b0f58.png)
 
-## Switching Schedulers
+### c) Switching Schedulers
 
 To see a list of compatible schedulers you can use
 ```
@@ -426,10 +426,6 @@ image
 ```
 
 ![ddpmcat](https://user-images.githubusercontent.com/107524206/228112520-37ba91e0-55d7-42ac-9ec7-ba455c621a58.png)
-
-## Other pretrained models
-
-
 
 
 ## 5. End Notes
