@@ -356,7 +356,7 @@ grid
 ![catgrid](https://user-images.githubusercontent.com/107524206/228106888-7eaf3b20-413f-47e1-91e6-eec134db903a.png)
 
 ### b) Keeping images the same
-If you wanted to generate the same image every time, we can create and pass the same generator object into the pipe.
+To generate the same image every time, we can create and pass the same generator object into the pipe.
 
 ```
 # to get the same image everytime;  
@@ -427,6 +427,24 @@ image
 
 ![ddpmcat](https://user-images.githubusercontent.com/107524206/228112520-37ba91e0-55d7-42ac-9ec7-ba455c621a58.png)
 
+
+### d) Other pre-trained models
+There are many other pre-trained models available at https://huggingface.co/models?other=stable-diffusion
+A fun one is [Pokemon Stable Diffusion](https://huggingface.co/justinpinkney/pokemon-stable-diffusion)
+
+```
+pokemonpipe = StableDiffusionPipeline.from_pretrained("justinpinkney/pokemon-stable-diffusion")
+pokemonpipe = pokemonpipe.to("cuda")
+prompt = "a photo of a cat on a beach"
+generator = torch.Generator("cuda").manual_seed(42) 
+image = pokemonpipe(prompt, generator=generator, num_inference_steps=50).images[0]
+image
+```
+
+![pokemondiffusion](https://user-images.githubusercontent.com/107524206/228126749-66d9d43b-d0b9-4098-9032-1c3f3a1b3623.png)
+
+
+Google Colab Notebook with demo code https://colab.research.google.com/drive/1_euD6siX6xJiMI41hh6v1XaG5qnmVdJS?usp=sharing
 
 ## 5. End Notes
 
