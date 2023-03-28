@@ -8,13 +8,13 @@ Presented by Group 1: Shu Ying, JF, Jia Hao and Yan Liong
 
 ## 1. Introduction
 
-Stable Diffusion, a text-to-image deep learning model, was developed and released by the start-up Stability AI in August 2022. The user can input a text prompt in plain English, and the model would output an image to match the given prompt. Stable Diffusion quickly made news headlines and captured the popular imagination. In February 2023, Forbes reported that Stable Diffusion is used by "more than 10 million people on a daily basis" [1].
+Stable Diffusion, a latent diffusion model, was developed and released by the start-up Stability AI in August 2022. The user can input a text prompt in plain English, and the model would output an image to match the given prompt. Stable Diffusion quickly made news headlines and captured the popular imagination. In February 2023, Forbes reported that Stable Diffusion is used by "more than 10 million people on a daily basis" [1].
 
-Before the arrival of Stable Diffusion, text-to-image diffision models such as DALL-E and Midjourney were publicly available only via cloud services. Stable Diffusion was the first diffision model which had its code and model weights released to the public, allowing users to run the model on their own modest hardware resources. [2]
+Before the arrival of Stable Diffusion, text-to-image diffusion models such as DALL-E and Midjourney were publicly available only via cloud services. Stable Diffusion was the first diffusion model which had its code and model weights released to the public, allowing users to run the model on their own modest hardware resources. [2]
 
-Hugging Face has gathered recent diffusion models from independent repositories in a single community project, called the `diffusers` library. [3]
+Hugging Face has gathered recent diffusion models from independent repositories in a single community project, called the `diffusers` library. [3] They utilized their library to create a stable diffusion API pipeline.
 
-In this article, we walk through some code to demonstrate the use of the `diffusers` API, which allows us to perform inferencing to generate synthetic images.
+In this article, we walk through some code to demonstrate the use of the text-to-image diffusion pipeline by Hugging Face, which allows us to perform inferencing to generate synthetic images.
 
 ## 2. What is Stable Diffusion?
 
@@ -28,7 +28,7 @@ Before we dive into the main components of Stable Diffusion, we need to have a b
 
 ### Diffusion Process
 
-Stable Diffusion uses both forward and backward diffusion processes to generate high-quality images. The forward diffusion process starts with a random noise vector and gradually adds noise until the vector becomes completely random. Next, the process is then reversed with backward diffusion process which gradually removes noise from the image. The combination of forward and backward diffusion allows the model to capture the complex dependencies between different parts of the image and generate visually appealing and semantically consistent images.
+Stable Diffusion uses both forward and backward diffusion processes to generate high-quality images. The forward diffusion process starts with an image and gradually adds noise until the vector becomes completely random. Next, the process is then reversed with backward diffusion process which gradually removes noise from the image. The combination of forward and backward diffusion allows the model to capture the complex dependencies between different parts of the image and generate visually appealing and semantically consistent images.
 
 At each step in the diffusion process, the model applies a diffusion operator to the noise vector. The diffusion operator is a combination of a Gaussian diffusion kernel and a learnable transformation function that maps the noise vector to the image space. 
 
@@ -38,7 +38,7 @@ For this article, we will focus on Stable Diffusion text-to-image pipeline. The 
 
 ## a. Variational Autoencoder (VAE)
 
-### Explanational of VAE component and its role in Stable Diffusion
+### Explanation of VAE component and its role in Stable Diffusion
 
 The Variational Autoencoder (VAE) is a type of generative model that can be used to learn a low-dimensional representation of high-dimensional data. It is a neural network that consists of two parts, an encoder and a decoder. The encoder compresses an image to a lower dimensional representation in the latent space while decoder takes the latent space representation and restores the image from the latent space.
 
@@ -46,7 +46,7 @@ The main goal of the VAE is to learn a low-dimensional representation of the inp
 
 ### How the VAE encodes images into a low-dimensional representation / How the VAE is trained to learn the distribution of input images
 
-The VAE is different from other types of generative models in that it learns a probabilistic distribution over the latent space. This distribution is modeled as a Gaussian distribution with a mean and a variance. The mean and variance of the distribution are learned during the training process and are used to sample points in the latent space. These samples are then passed through the decoder to generate new data points that are similar to the original input data.
+The VAE is different from other types of generative models in that it learns a probabilistic distribution over the latent space. This distribution is modelled as a Gaussian distribution with a mean and a variance. The mean and variance of the distribution are learned during the training process and are used to sample points in the latent space. These samples are then passed through the decoder to generate new data points that are similar to the original input data.
 
 During the training process, the VAE is optimized to minimize the reconstruction loss and the KL-divergence between the learned latent space distribution and a prior distribution, typically a standard Gaussian distribution. The reconstruction loss measures the difference between the input data and the output generated by the decoder, while the KL-divergence measures the difference between the learned distribution over the latent space and the prior distribution. The combination of these two losses is used to train the VAE to generate high-quality output that is similar to the original input data.
 
@@ -58,7 +58,7 @@ In the context of the Stable Diffusion architecture, the VAE is used to encode t
 
 ### Explanation of the U-Net component and its role in Stable Diffusion
 
-U-Net is a type of convolutional neural network (CNN) that is downsampling an image into lower-dimensional representation and reconstructs it during upsampling. The downsampling and upsampling stacks communciate through skip connections. In the context of the Stable Diffusion architecture, U-Net is used to generate high-quality images from the low-dimensional representation of the input image, generated by the Variational Autoencoder (VAE).
+U-Net is a type of convolutional neural network (CNN) that is downsampling an image into lower-dimensional representation and reconstructs it during upsampling. The downsampling and upsampling stacks communicate through skip connections. In the context of the Stable Diffusion architecture, U-Net is used to generate high-quality images from the low-dimensional representation of the input image, generated by the Variational Autoencoder (VAE).
 
 In the context of the Stable Diffusion architecture, the U-Net is used to generate high-quality images from the latent space representation generated by the VAE. The U-Net takes the latent space representation as input and generates an output image that is similar to the original input image. The skip connections in the U-Net architecture help in the preservation of fine-grained details in the input image, which are important for generating high-quality output images. The U-Net is trained on a large dataset of images to learn the mapping between the latent space representation and the output image.
 
@@ -72,8 +72,6 @@ The unique aspect of the U-Net architecture is the skip connections that connect
 
 In the context of the Stable Diffusion architecture, the U-Net is used to generate high-quality images from the latent space representation generated by the VAE. The U-Net takes the latent space representation as input and generates an output image that is similar to the original input image. The skip connections in the U-Net architecture help in the preservation of fine-grained details in the input image, which are important for generating high-quality output images. The U-Net is trained on a large dataset of images to learn the mapping between the latent space representation and the output image.
 
-In summary, U-Net is a type of convolutional neural network that is commonly used in image-to-image translation tasks. It consists of an encoder path and a decoder path, with skip connections that connect corresponding layers in the encoder and decoder paths. In the context of the Stable Diffusion architecture, U-Net is used to generate high-quality images from the latent space representation generated by the VAE. The skip connections in the U-Net architecture help in the preservation of fine-grained details in the input image, which are important for generating high-quality output images.
-
 ## c. CLIP
 
 The CLIP text embedding is a component of the Stable Diffusion architecture, which can be used to incorporate textual information into the generation of images. CLIP is a transformer-based model that directly maps the textual input to a high-dimensional vector representation. This vector representation can be used to guide the generation of images by the VAE and U-Net components, either by concatenating it with the low-dimensional representation of the input image or by using it to guide the denoising process in the diffusion process.
@@ -84,12 +82,6 @@ In the Stable Diffusion architecture, CLIP can be used to generate a text embedd
 
 The incorporation of CLIP into the Stable Diffusion architecture can be useful in scenarios where textual descriptions are available for the images being generated. By leveraging the rich relationship between images and text learned by CLIP, it is possible to generate high-quality images that are consistent with the input textual descriptions. This is particularly relevant in applications such as image captioning, where a textual description of an image is used to generate a corresponding caption.
 
-In summary, CLIP is an optional component of the Stable Diffusion architecture that can be used to incorporate textual information into the generation of images. By directly mapping textual input to a high-dimensional vector representation, CLIP can capture a broader range of semantic information than the Text Encoder. This vector representation can be used to guide the generation of images by the VAE and U-Net components, either by concatenating it with the low-dimensional representation of the input image or by using it to guide the denoising process in the diffusion process.
-
-
-[Below is a draft by JF: Please feel free to use or discard.]
-
-Diffusion models are denoising algorithms, trained using deep learning to remove random noise in a series of gradual steps. Starting with 100% noise, after a certain number of steps, the model finally outputs an image to match the text prompt [3].
 
 <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/diffusion-process.png" width="800">
 
@@ -101,17 +93,8 @@ Here is another view of the architecture:
 
 <img src="https://i0.wp.com/stable-diffusion-art.com/wp-content/uploads/2022/12/image-85.png?resize=768%2C358&ssl=1" width="800">
 
-Highlights of this architecture, explained in simplified terms:
 
-- The size of the input images is the same as that of the output image [3].
-- The input image is downsized using a series of ResNet layers and encoded into a much smaller (compressed) latent space (as a latent image tensor). [3, 4]
-- As the latent space is small, this makes it faster for the forward and reverse diffusions to take place. [3, 4]
-- From this latent space, the output image is decoded and upscaled to full size. [3, 4]
-- The steps of the diffusion (computing a less noisy image) are defined in a scheduler.
-
-
-
-## 3. FaceHugging's Pipeline Components
+## 3. Hugging Face's Pipeline Components
 
 ### The 4 main components in Hugging Face's diffusion are:
 
@@ -136,7 +119,6 @@ U-Net
 
 <img src="stable_diffusion.png" width="500">[6]
 
-
 <br>
 <br>
 
@@ -160,7 +142,7 @@ scheduler = LMSDiscreteScheduler.from_pretrained("CompVis/stable-diffusion-v1-4"
 unet = UNet2DConditionModel.from_pretrained("google/ddpm-church-256", subfolder="unet")
 ```
 
-### b) Setup the text encoding
+### b) Set up the text encoding
 
 Initially, we obtain the text embeddings for the given prompt, which will serve as a basis for conditioning the UNet model.
 
@@ -251,7 +233,6 @@ We update the scheduler with our chosen num_inference_steps. This will compute t
 ```
 scheduler.set_timesteps(num_inference_steps)
 ```
-
 
 The K-LMS scheduler necessitates the multiplication of latents with their corresponding sigma values. We can accomplish this step at this point.
 
@@ -351,7 +332,6 @@ for t in tqdm(scheduler.timesteps):
 ```
  <img src="denoise_1.jpg" width="500">[7]
 
-
 ### h) Finally we will utilize the vae to decode the generated latents and recover the denoised image.
 
 ```
@@ -382,7 +362,6 @@ image = pipe(prompt).images[0]
 image
 ```
 ![cat1](https://user-images.githubusercontent.com/107524206/228105651-d1a42898-c270-4061-82c5-d5b183203080.png)
-
 
 As you can see above, our prompt "a photo of a cat on a beach" generates exactly that
 
@@ -426,7 +405,7 @@ grid
 To generate the same image every time, we can create and pass the same generator object into the pipe.
 
 ```
-# to get the same image everytime;  
+# to get the same image every time;  
 import torch
 
 generator = torch.Generator("cuda").manual_seed(42) 
@@ -439,7 +418,6 @@ image
 ```
 
 ![42cat](https://user-images.githubusercontent.com/107524206/228107882-3fe7808d-2cd3-405d-949f-c690db95a574.png)
-
 
 This is useful if you want to experiment with different settings and see what they do to a base image. For example, you could change the number of inference / sampling steps. 
 ```
@@ -494,7 +472,6 @@ image
 
 ![ddpmcat](https://user-images.githubusercontent.com/107524206/228112520-37ba91e0-55d7-42ac-9ec7-ba455c621a58.png)
 
-
 ### d) Other pre-trained models
 There are many other pre-trained models available at https://huggingface.co/models?other=stable-diffusion
 A fun one is [Pokemon Stable Diffusion](https://huggingface.co/justinpinkney/pokemon-stable-diffusion)
@@ -509,7 +486,6 @@ image
 ```
 
 ![pokemondiffusion](https://user-images.githubusercontent.com/107524206/228126749-66d9d43b-d0b9-4098-9032-1c3f3a1b3623.png)
-
 
 Google Colab Notebook with demo code https://colab.research.google.com/drive/1_euD6siX6xJiMI41hh6v1XaG5qnmVdJS?usp=sharing
 
