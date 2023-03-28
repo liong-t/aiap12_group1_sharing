@@ -296,9 +296,10 @@ with torch.no_grad():
 ```
 
 ## 4. Application -> Text to imageOutput Demo
-
-[Shu Ying]
-
+```
+ !pip install --upgrade diffusers[torch]
+ !pip install transformers
+```
 ## 5. End Notes
 
 [Yan Liong]
