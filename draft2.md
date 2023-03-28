@@ -264,8 +264,6 @@ latents = latents * scheduler.init_noise_sigma
 
 The **model** is a pre-trained neural network used for predicting a slightly less noisy image or residual (difference between the slightly less noisy image and the input image). It takes a noisy sample and a timestep as inputs to predict a less noisy output sample.
 
-For the purposes of this blog we will be focusing on the inferencing aspect of the diffusers library which occurs in the diffusion pipeline. If you however wish to read up on the training portion please go to this [jupyter notebook](https://colab.research.google.com/gist/anton-l/f3a8206dae4125b93f05b1f5f703191d/diffusers_training_example.ipynb#scrollTo=67640279-979b-490d-80fe-65673b94ae00).
-
 The `model` API allows us to download a model's configuration and weights from a repo, using the `from_pretrained()` method. After you download for the first time, it is cached locally, so subsequent execution will be faster. [3] The Unet model is a PyTorch torch.nn.Module class.
 
 We can print out the model's configuration to take a look. Some of the more important config parameters are annotated below in the code.
@@ -501,6 +499,10 @@ image
 Google Colab Notebook with [demo code](https://colab.research.google.com/drive/1_euD6siX6xJiMI41hh6v1XaG5qnmVdJS?usp=sharing).
 
 ## 5. End Notes
+
+In this article, we provide a comprehensive overview of the stable diffusion concept and offer a step-by-step guide to implementing it using the Hugging Face's Diffusion API, a widely-used platform for natural language processing and machine learning. By following our guide, you can now easily incorporate stable diffusion into your own projects to create dynamic and engaging content!
+
+It is important to note that this blog focuses solely on the backward diffusion processes (inferencing) to generate high-quality images. However, if you are interested in learning about the forward diffusion process (training), we recommend checking out this [jupyter notebook](https://colab.research.google.com/gist/anton-l/f3a8206dae4125b93f05b1f5f703191d/diffusers_training_example.ipynb#scrollTo=67640279-979b-490d-80fe-65673b94ae00). It provides a detailed explanation of how to train your own model, which can then be integrated into the diffusion pipeline to further enhance your results.
 
 
 ## References
