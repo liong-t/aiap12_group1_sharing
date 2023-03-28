@@ -98,19 +98,22 @@ Here is another view of the architecture:
 
 ### The 4 main components in Hugging Face's diffusion are:
 
-<br>
-Text-Encoder
 
-- The text-encoder transforms input prompts into an embedding space for the U-Net. A transformer-based encoder maps input tokens to latent text-embeddings. Stable Diffusion uses CLIP's pretrained text encoder, CLIPTextModel, without additional training.
+### Text-Encoder
 
-Variational Autoencoder (VAE)
-- The VAE consists of an encoder and a decoder, whose main goal is to transform an image back and from its latent space . During training, the encoder converts images into low-dimensional latent representations, serving as input for the U-Net model. During inference, the decoder transforms latent representations back into images.[6]
+- The text-encoder transforms input prompts into an embedding space for the U-Net. A transformer-based encoder maps input tokens to latent text-embeddings. 
+- Stable Diffusion uses CLIP's pretrained text encoder, CLIPTextModel, without additional training.
 
-Scheduler
-- The scheduling algorithm used to progressively add noise to the image during training.
+### Variational Autoencoder (VAE)
+- The VAE consists of an encoder and a decoder, whose main goal is to transform an image back and from its latent space . 
+- During training, the encoder converts images into low-dimensional latent representations, serving as input for the U-Net model. During inference, the decoder transforms latent representations back into images.[6]
 
-U-Net
-- U-Net has an encoder and a decoder, both composed of ResNet blocks, its goal is to process the latent images obtained from the VAE encoder. The encoder compresses image representation into lower resolution, while the decoder reconstructs the original, less noisy, high-resolution representation. U-Net output predicts noise residual for denoised image calculation. Shortcut connections between encoder's downsampling and decoder's upsampling ResNets prevent information loss. Stable diffusion U-Net conditions its output on text-embeddings via cross-attention layers in both encoder and decoder.[6]
+### Scheduler
+- The scheduling algorithm used to progressively add noise to the image during training and removes noise during inference.
+
+### U-Net
+- U-Net has an encoder and a decoder, both composed of ResNet blocks, its goal is to process the latent images obtained from the VAE encoder. The encoder compresses image representation into lower resolution, while the decoder reconstructs the original, less noisy, high-resolution representation. 
+- U-Net output predicts noise residual for denoised image calculation. Shortcut connections between encoder's downsampling and decoder's upsampling ResNets prevent information loss. Stable diffusion U-Net conditions its output on text-embeddings via cross-attention layers in both encoder and decoder.[6]
 
 <br>
 <br>
@@ -126,7 +129,7 @@ U-Net
 
 ```
 from transformers import CLIPTextModel, CLIPTokenizer
-from diffusers import AutoencoderKL, UNet2DConditionModel, PNDMScheduler
+from diffusers import AutoencoderKL, UNet2DConditionModel, LMSDiscreteScheduler
 
 # 1. Load the autoencoder model which will be used to decode the latents into image space. 
 vae = AutoencoderKL.from_pretrained("CompVis/stable-diffusion-v1-4", subfolder="vae")
@@ -144,13 +147,21 @@ unet = UNet2DConditionModel.from_pretrained("google/ddpm-church-256", subfolder=
 
 ### b) Set up the text encoding
 
-Initially, we obtain the text embeddings for the given prompt, which will serve as a basis for conditioning the UNet model.
+Initially, we obtain the text embeddings for the given prompt, which will serve as a basis for conditioning the UNet model.[0]
 
 ```
-text_input = tokenizer(prompt, padding="max_length", max_length=tokenizer.model_max_length, truncation=True, return_tensors="pt")
+prompt = ["a photograph of an astronaut riding a horse"]
+```
+
+```
+text_input = tokenizer(prompt, 
+                       padding="max_length", 
+                       max_length=tokenizer.model_max_length, 
+                       truncation=True, 
+                       return_tensors="pt")
 
 with torch.no_grad():
-  text_embeddings = text_encoder(text_input.input_ids.to(torch_device))[0]
+  text_embeddings = text_encoder(text_input.input_ids.to(torch_device))
 ```
 
 Furthermore, we will acquire unconditional text embeddings to provide classifier-free guidance, which consist solely of the embeddings for the padding token (empty text). It is crucial to ensure that their dimensions match those of the conditional text embeddings (i.e., batch_size and seq_length).
@@ -158,7 +169,10 @@ Furthermore, we will acquire unconditional text embeddings to provide classifier
 ```
 max_length = text_input.input_ids.shape[-1]
 uncond_input = tokenizer(
-    [""] * batch_size, padding="max_length", max_length=max_length, return_tensors="pt"
+    [""] * batch_size,
+    padding="max_length",
+    max_length=max_length,
+    return_tensors="pt"
 )
 with torch.no_grad():
   uncond_embeddings = text_encoder(uncond_input.input_ids.to(torch_device))[0]   
@@ -170,12 +184,15 @@ To enable classifier-free guidance, we need to perform two separate forward pass
 text_embeddings = torch.cat([uncond_embeddings, text_embeddings])
 ```
 ### c) Generate latent space
-Next we generate the random latent space
+Next, we generate the random latent space:
 
 ```
 latents = torch.randn(
-  (batch_size, unet.in_channels, height // 8, width // 8),
-  generator=generator,
+    (batch_size,
+    unet.in_channels,
+    height // 8,
+    width // 8),
+    generator=generator,
 )
 latents = latents.to(torch_device)
 ```
@@ -209,14 +226,17 @@ FrozenDict([('num_train_timesteps', 1000),  # Length of the denoising process,
 
 The scheduler has a `step()` function which is used to compute the slightly less noisy image. The step function takes in a few arguments:
 
-- A `noisy_residual` previously predicted by the model (difference between the slightly less noisy image and the input image).
+- A `noisy_residual` predicted by the model (difference between the slightly less noisy image and the input image).
 - The timestep.
 - The current `noisy_sample`.
 
 ```
 less_noisy_sample = scheduler.step(
-    model_output=noisy_residual, timestep=2, sample=noisy_sample
+    model_output=noisy_residual,
+    timestep=2,
+    sample=noisy_sample
 ).prev_sample
+
 print(less_noisy_sample.shape)
 ```
 Output:
@@ -228,13 +248,13 @@ Notice that the output sample's shape is the same as the input, so it is can be 
 
 ### e) Updating the Current Schedulers
 
-We update the scheduler with our chosen num_inference_steps. This will compute the sigmas and exact time step values to be used during the denoising process.
+We update the scheduler with our chosen `num_inference_steps`. This will compute the sigmas and exact time step values to be used during the denoising process.
 
 ```
 scheduler.set_timesteps(num_inference_steps)
 ```
 
-The K-LMS scheduler necessitates the multiplication of latents with their corresponding sigma values. We can accomplish this step at this point.
+The scheduler necessitates the multiplication of latents with their corresponding sigma values. We can accomplish this step at this point.
 
 ```
 latents = latents * scheduler.init_noise_sigma
@@ -242,27 +262,16 @@ latents = latents * scheduler.init_noise_sigma
 
 ### f) Model
 
-We use a pipeline to group together the **model** and the **scheduler** and make it easy for an end-user to run a full denoising loop process.
-
 The **model** is a pre-trained neural network used for predicting a slightly less noisy image or residual (difference between the slightly less noisy image and the input image). It takes a noisy sample and a timestep as inputs to predict a less noisy output sample.
 
-For the purposes of this blog we will be focusing on the inferencing aspect of the diffusers library which occurs in the hugging face's diffusion pipeline. If you however wish to read up on the training portion please go to this jupyter notebook  https://colab.research.google.com/gist/anton-l/f3a8206dae4125b93f05b1f5f703191d/diffusers_training_example.ipynb#scrollTo=67640279-979b-490d-80fe-65673b94ae00 
+For the purposes of this blog we will be focusing on the inferencing aspect of the diffusers library which occurs in the diffusion pipeline. If you however wish to read up on the training portion please go to this [jupyter notebook](https://colab.research.google.com/gist/anton-l/f3a8206dae4125b93f05b1f5f703191d/diffusers_training_example.ipynb#scrollTo=67640279-979b-490d-80fe-65673b94ae00).
 
-The `model` API allows us to download a model's configuration and weights from a repo, using the `from_pretrained()` method. After you download for the first time, it is cached locally, so subsequent execution will be faster. [3]
-
-For example, below we download a UNet2DModel image generation model trained on church images. The model is a PyTorch torch.nn.Module class.
-
-```
-from diffusers import UNet2DModel
-
-repo_id = "google/ddpm-church-256"
-model = UNet2DModel.from_pretrained(repo_id)
-```
+The `model` API allows us to download a model's configuration and weights from a repo, using the `from_pretrained()` method. After you download for the first time, it is cached locally, so subsequent execution will be faster. [3] The Unet model is a PyTorch torch.nn.Module class.
 
 We can print out the model's configuration to take a look. Some of the more important config parameters are annotated below in the code.
 
 ```
-print(model.config)
+print(unet.config)
 ```
 Output:
 
@@ -307,7 +316,7 @@ Let's use the model to do some inferencing in the denoising loop.
 
 ### g) Denoising loop 
 
-The denoising loop turns the latent noisy image into denoised latent images using the scheduler[6]
+The denoising loop turns the latent noisy image into denoised latent images using the scheduler. [6]
 
 ```
 from tqdm.auto import tqdm
@@ -332,7 +341,9 @@ for t in tqdm(scheduler.timesteps):
 ```
  <img src="denoise_1.jpg" width="500">[7]
 
-### h) Finally we will utilize the vae to decode the generated latents and recover the denoised image.
+### h) Decode generated latents
+
+Finally we will utilize the vae to decode the generated latents and recover the denoised image.
 
 ```
 # scale and decode the image latents with vae
@@ -342,7 +353,7 @@ with torch.no_grad():
   image = vae.decode(latents).sample
 ```
 
-## 4. Application -> Text to imageOutput Demo
+## 4. Application -> Text-to-image output demo
 First, install and import the necessary libraries
 ```
  !pip install --upgrade diffusers[torch]
@@ -363,12 +374,12 @@ image
 ```
 ![cat1](https://user-images.githubusercontent.com/107524206/228105651-d1a42898-c270-4061-82c5-d5b183203080.png)
 
-As you can see above, our prompt "a photo of a cat on a beach" generates exactly that
+As you can see above, our prompt "a photo of a cat on a beach" generates exactly that.
 
 ### a) Multiple images from the same prompt
 A different image is generated each time you pass in the prompt, even if it's the same one. So if you wanted multiple different pictures of cats at beaches, you could do this
 
-Create a helper function to display multiple images in a grid
+Create a helper function to display multiple images in a grid:
 ```
 # Helper function to create image grid
 from PIL import Image
@@ -384,7 +395,7 @@ def image_grid(imgs, rows, cols):
         grid.paste(img, box=(i%cols*w, i//cols*h))
     return grid
 ```
-Generate the images and display in a grid
+Generate the images and display in a grid:
 ```
 num_cols = 2
 num_rows = 3
@@ -402,7 +413,7 @@ grid
 ![catgrid](https://user-images.githubusercontent.com/107524206/228106888-7eaf3b20-413f-47e1-91e6-eec134db903a.png)
 
 ### b) Keeping images the same
-To generate the same image every time, we can create and pass the same generator object into the pipe.
+To generate the same image every time, we can create and pass the same generator object into the pipe:
 
 ```
 # to get the same image every time;  
@@ -413,13 +424,12 @@ generator = torch.Generator("cuda").manual_seed(42)
 # before generating the image if you want to get back the same image / similar image (with other settings tweaked)
 
 image = pipe(prompt, generator=generator).images[0]
-
 image
 ```
 
 ![42cat](https://user-images.githubusercontent.com/107524206/228107882-3fe7808d-2cd3-405d-949f-c690db95a574.png)
 
-This is useful if you want to experiment with different settings and see what they do to a base image. For example, you could change the number of inference / sampling steps. 
+This is useful if you want to experiment with different settings and see what they do to a base image. For example, you could change the number of inference / sampling steps: 
 ```
 # same generator, much higher number of inference steps (75), quality does not increase significantly from 50 steps
 generator = torch.Generator("cuda").manual_seed(42)
@@ -473,8 +483,9 @@ image
 ![ddpmcat](https://user-images.githubusercontent.com/107524206/228112520-37ba91e0-55d7-42ac-9ec7-ba455c621a58.png)
 
 ### d) Other pre-trained models
-There are many other pre-trained models available at https://huggingface.co/models?other=stable-diffusion
-A fun one is [Pokemon Stable Diffusion](https://huggingface.co/justinpinkney/pokemon-stable-diffusion)
+There are many other [pre-trained models available](https://huggingface.co/models?other=stable-diffusion).
+
+A fun one is [Pokemon Stable Diffusion](https://huggingface.co/justinpinkney/pokemon-stable-diffusion):
 
 ```
 pokemonpipe = StableDiffusionPipeline.from_pretrained("justinpinkney/pokemon-stable-diffusion")
@@ -487,11 +498,10 @@ image
 
 ![pokemondiffusion](https://user-images.githubusercontent.com/107524206/228126749-66d9d43b-d0b9-4098-9032-1c3f3a1b3623.png)
 
-Google Colab Notebook with demo code https://colab.research.google.com/drive/1_euD6siX6xJiMI41hh6v1XaG5qnmVdJS?usp=sharing
+Google Colab Notebook with [demo code](https://colab.research.google.com/drive/1_euD6siX6xJiMI41hh6v1XaG5qnmVdJS?usp=sharing).
 
 ## 5. End Notes
 
-[Yan Liong]
 
 ## References
 
