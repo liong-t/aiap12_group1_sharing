@@ -296,10 +296,19 @@ with torch.no_grad():
 ```
 
 ## 4. Application -> Text to imageOutput Demo
+First, install and import the necessary libraries
 ```
  !pip install --upgrade diffusers[torch]
  !pip install transformers
+ from diffusers import StableDiffusionPipeline
 ```
+Instantiate the pipeline; if you have a CUDA-enabled GPU, you can move the pipe object there to speed up processing.
+```
+pipe = StableDiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5")
+pipe = pipe.to("cuda")
+```
+
+
 ## 5. End Notes
 
 [Yan Liong]
