@@ -82,7 +82,7 @@ In the Stable Diffusion architecture, CLIP can be used to generate a text embedd
 
 The incorporation of CLIP into the Stable Diffusion architecture can be useful in scenarios where textual descriptions are available for the images being generated. By leveraging the rich relationship between images and text learned by CLIP, it is possible to generate high-quality images that are consistent with the input textual descriptions. This is particularly relevant in applications such as image captioning, where a textual description of an image is used to generate a corresponding caption.
 
-<div style="text-align:center">
+<div align="center" width="100%">
 <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/diffusion-process.png" width="800">
 <div>
 
