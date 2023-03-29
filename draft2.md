@@ -216,6 +216,27 @@ print(scheduler.config)
 ```
 Output:
 ```
+FrozenDict([
+    ('num_train_timesteps', 1000),# Length of the denoising process,
+                                  # i.e. how many timesteps are need to process
+                                  # random gaussian noise to a data sample.
+
+    ('beta_start', 0.00085),      # Smallest noise value of the schedule.
+    ('beta_end', 0.012),          # Highest noise value of the schedule.
+    ('beta_schedule', 'scaled_linear'), # Type of noise schedule that shall be used
+                                        # for inference and training.
+    ('trained_betas', None),
+    ('prediction_type', 'epsilon'),
+    ('_class_name', 'PNDMScheduler'),
+    ('_diffusers_version', '0.7.0.dev0'),
+    ('set_alpha_to_one', False),
+    ('skip_prk_steps', True),
+    ('steps_offset', 1),
+    ('clip_sample', False)
+])
+```
+
+```
 FrozenDict([('num_train_timesteps', 1000),  # Length of the denoising process,
                                             # i.e. how many timesteps are need to process
                                             # random gaussian noise to a data sample.
@@ -280,38 +301,47 @@ print(unet.config)
 Output:
 
 ```
-FrozenDict([('sample_size', 256),  # height and width dimension of the input sample.
-            ('in_channels', 3),    # number of input channels of the input sample.
-            ('out_channels', 3),
-            ('center_input_sample', False),
-            ('time_embedding_type', 'positional'),
-            ('freq_shift', 1),
-            ('flip_sin_to_cos', False),
-            ('down_block_types',
-             ['DownBlock2D',
-              'DownBlock2D',
-              'DownBlock2D',
-              'DownBlock2D',
-              'AttnDownBlock2D',
-              'DownBlock2D']),
-            ('up_block_types',
-             ['UpBlock2D',
-              'AttnUpBlock2D',
-              'UpBlock2D',
-              'UpBlock2D',
-              'UpBlock2D',
-              'UpBlock2D']),
-            ('block_out_channels', [128, 128, 256, 256, 512, 512]),
-            ('layers_per_block', 2),  # how many ResNet blocks are present in each UNet block.
-            ('mid_block_scale_factor', 1),
-            ('downsample_padding', 0),
-            ('act_fn', 'silu'),
-            ('attention_head_dim', None),
-            ('norm_num_groups', 32),
-            ('norm_eps', 1e-06),
-            ('_class_name', 'UNet2DModel'),
-            ('_diffusers_version', '0.3.0'),
-            ('_name_or_path', 'CompVis/stable-diffusion-v1-4')])
+FrozenDict([
+    ('sample_size', 64),
+    ('in_channels', 4),
+    ('out_channels', 4),
+    ('center_input_sample', False),
+    ('flip_sin_to_cos', True),
+    ('freq_shift', 0),
+    ('down_block_types', [
+        'CrossAttnDownBlock2D',
+        'CrossAttnDownBlock2D',
+        'CrossAttnDownBlock2D',
+        'DownBlock2D'
+    ]),
+    ('mid_block_type', 'UNetMidBlock2DCrossAttn'),
+    ('up_block_types', [
+        'UpBlock2D',
+        'CrossAttnUpBlock2D',
+        'CrossAttnUpBlock2D',
+        'CrossAttnUpBlock2D'
+    ]),
+    ('only_cross_attention', False),
+    ('block_out_channels', [320, 640, 1280, 1280]),
+    ('layers_per_block', 2),
+    ('downsample_padding', 1),
+    ('mid_block_scale_factor', 1),
+    ('act_fn', 'silu'),
+    ('norm_num_groups', 32),
+    ('norm_eps', 1e-05),
+    ('cross_attention_dim', 768),
+    ('attention_head_dim', 8),
+    ('dual_cross_attention', False),
+    ('use_linear_projection', False),
+    ('class_embed_type', None),
+    ('num_class_embeds', None),
+    ('upcast_attention', False),
+    ('resnet_time_scale_shift', 'default'),
+    ('_class_name', 'UNet2DConditionModel'),
+    ('_diffusers_version', '0.2.2'),
+    ('_name_or_path', 'CompVis/stable-diffusion-v1-4')
+])
+
 ```
 
 Notice that model config is a frozen dictionary, which is immutable. That means it contains no attributes that can be changed during inference. [3]
@@ -343,9 +373,6 @@ for t in tqdm(scheduler.timesteps):
   # compute the previous noisy sample x_t -> x_t-1
   latents = scheduler.step(noise_pred, t, latents).prev_sample
 ```
-<div align="center" width="100%">
-<img src="denoise_1.jpg" width="500">[7]
-</div>
 
 ### h) Decode generated latents
 
