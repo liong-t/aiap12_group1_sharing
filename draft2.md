@@ -148,7 +148,7 @@ text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
 scheduler = LMSDiscreteScheduler.from_pretrained("CompVis/stable-diffusion-v1-4", subfolder="scheduler")
 
 # 4. The UNet model for generating the latents.
-unet = UNet2DConditionModel.from_pretrained("google/ddpm-church-256", subfolder="unet")
+unet = UNet2DConditionModel.from_pretrained("CompVis/stable-diffusion-v1-4", subfolder="unet")
 ```
 
 ### b) Set up the text encoding
@@ -311,7 +311,7 @@ FrozenDict([('sample_size', 256),  # height and width dimension of the input sam
             ('norm_eps', 1e-06),
             ('_class_name', 'UNet2DModel'),
             ('_diffusers_version', '0.3.0'),
-            ('_name_or_path', 'google/ddpm-church-256')])
+            ('_name_or_path', 'CompVis/stable-diffusion-v1-4')])
 ```
 
 Notice that model config is a frozen dictionary, which is immutable. That means it contains no attributes that can be changed during inference. [3]
