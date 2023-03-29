@@ -84,16 +84,19 @@ The incorporation of CLIP into the Stable Diffusion architecture can be useful i
 
 <div align="center" width="100%">
 <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/diffusion-process.png" width="800">
-<div>
+</div>
 
 The neural net typically follows the UNet architecture, which looks like this [3]:
 
+<div align="center" width="100%">
 <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/unet-model.png" width="800">
+</div>
 
 Here is another view of the architecture:
 
+<div align="center" width="100%">
 <img src="https://i0.wp.com/stable-diffusion-art.com/wp-content/uploads/2022/12/image-85.png?resize=768%2C358&ssl=1" width="800">
-
+</div>
 
 ## 3. Hugging Face's Pipeline Components
 
@@ -121,7 +124,9 @@ Here is another view of the architecture:
 
 ## How the pipeline components work  
 
+<div align="center" width="100%">
 <img src="stable_diffusion.png" width="500">[6]
+</div>
 
 <br>
 <br>
@@ -338,7 +343,9 @@ for t in tqdm(scheduler.timesteps):
   # compute the previous noisy sample x_t -> x_t-1
   latents = scheduler.step(noise_pred, t, latents).prev_sample
 ```
- <img src="denoise_1.jpg" width="500">[7]
+<div align="center" width="100%">
+<img src="denoise_1.jpg" width="500">[7]
+</div>
 
 ### h) Decode generated latents
 
@@ -371,7 +378,9 @@ prompt = "a photo of an cat on a beach"
 image = pipe(prompt).images[0]
 image
 ```
+<div align="center" width="100%">
 ![cat1](https://user-images.githubusercontent.com/107524206/228105651-d1a42898-c270-4061-82c5-d5b183203080.png)
+</div>
 
 As you can see above, our prompt "a photo of a cat on a beach" generates exactly that.
 
