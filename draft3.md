@@ -83,8 +83,7 @@ In the context of the Stable Diffusion architecture, the U-Net is used to genera
 ## c. Text Encoder (CLIP)
 
 <div align="center" width="100%">
-<img src="https://miro.medium.com/v2/resize:fit:1400/format:webp/0*z5eQUBRBVtgD3Vgv.png
-" width="800">
+<img src="https://user-images.githubusercontent.com/87654386/228499918-7efde79c-099f-487f-8b6d-11f87a498312.png" width="800">
 </div>
 
 ### Explanation of the Text Encoder (CLIP)
@@ -312,6 +311,8 @@ pil_images[0]
 <div align="center" width="100%">
 <img src="https://user-images.githubusercontent.com/87654386/228495706-747bcbd4-2628-4890-ad39-a118498cac00.png">
 </div>
+
+Refer to [Stable Diffusion notebook](https://colab.research.google.com/drive/1tjza4tYRTrE3UIa5HcHK1pSRSkHBFzAP?authuser=3#scrollTo=U5w4l7d-814G) for detailed implementation.
 
 ## 4. Application -> Text-to-image output demo
 First, install and import the necessary libraries
