@@ -14,7 +14,7 @@ Before the arrival of Stable Diffusion, text-to-image diffusion models such as D
 
 Hugging Face Hub has gathered recent diffusion models from independent repositories in a single community project, called the `diffusers` library. [3] They utilized their library to create a Stable Diffusion API pipeline.
 
-In this article, we walk through some code to demonstrate the use of the text-to-image diffusion pipeline by Hugging Face, which allows us to perform inferencing to generate synthetic images.
+In this article, we walk through some code to demonstrate the use of the text-to-image diffusion pipeline by Hugging Face Hub, which allows us to perform inferencing to generate synthetic images.
 
 ## 2. What is Stable Diffusion?
 
